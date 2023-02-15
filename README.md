@@ -1,2 +1,2 @@
 # durins-bridge
-Not all Docker requests should pass
+Some Docker requests shall not pass!
