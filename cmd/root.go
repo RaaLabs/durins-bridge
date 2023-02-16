@@ -10,8 +10,34 @@ import (
 )
 
 var root = &cobra.Command{
-	Use:   "durins-bridge",
-	Short: "Durins Bridge is the bridge that separates the trusted Docker socket",
+	Use: "durins-bridge",
+	Short: `Durins Bridge is the bridge that separates the trusted       ,---.
+Docker land socket from the dark unknown                    /    |
+mines of userland. It is guarded by a                      /     |
+powerfull wizard - and if any unwanted                    /      |
+commands enter, they SHALL NOT PASS!                     /       |
+                                                    ___,'        |
+                                                  <  -'          :
+                                                   '-.__..--'''-,_\_
+                                                      |o/ ' :,.)_'>
+                                                      :/ '     ||/)
+                                                      (_.).__,-' |\
+                                                      /( '.''   '| :
+                                                      \''-.)  '  ; ;
+                                                      | '       /-<
+                                                      |     '  /   '.
+                                      ,-_-..____     /|  '    :__..-'\
+                                     /,'-.__\\  ''-./ :'      ;       \
+                                     '\ '\  '\\  \ :  (   '  /  ,   '. \
+                                       \' \   \\   |  | '   :  :     .\ \
+                                        \ '\_  ))  :  ;     |  |      ): :
+                                       ('-.-'\ ||  |\ \   ' ;  ;       | |
+                                        \-_   ';;._   ( '  /  /_       | |
+                                         '-.-.// ,''-._\__/_,'         ; |
+                                            \:: :     /     '     ,   /  |
+                                             || |    (        ,' /   /   |
+                                             ||                ,'   /    |
+`,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 		options := slog.HandlerOptions{}
 
