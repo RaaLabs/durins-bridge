@@ -1,0 +1,13 @@
+[Unit]
+Description=Durins Brigdge Service
+Requires=durins-bridge.socket
+After=durins-bridge.socket
+
+[Service]
+ExecStart=/usr/libexec/durin/bridge activate
+KillMode=process
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

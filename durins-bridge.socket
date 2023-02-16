@@ -1,0 +1,13 @@
+[Unit]
+Description=Durins Bridge IoT Edge Socket
+PartOf=durins-bridge.service
+
+[Socket]
+ListenStream=/run/durin/bridge-iotedge.sock
+SocketMode=0660
+DirectoryMode=0755
+SocketUser=iotedge
+SocketGroup=iotedge
+
+[Install]
+WantedBy=sockets.target
