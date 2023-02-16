@@ -14,4 +14,4 @@ jobs:
       - uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
-          args: build --clean
+          args: build --clean --snapshot
