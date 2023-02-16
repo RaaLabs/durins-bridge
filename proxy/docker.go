@@ -17,34 +17,8 @@ type Server struct {
 }
 
 func (s *Server) Serve(ctx context.Context) error {
-	dialer := s.Client.Dialer()
-
-	transport := &http.Transport{
-		DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
-			return dialer(ctx)
-		},
-	}
-
-	proxy := &httputil.ReverseProxy{
-		Director: func(r *http.Request) {
-			r.URL.Scheme = "http"
-			r.URL.Host = "docker.sock"
-
-			log.Println("Got request for", r.URL.String())
-		},
-		Transport: transport,
-	}
-
-	router := http.NewServeMux()
-	router.Handle("/", proxy)
-
-	router.HandleFunc("/v1.41/images/json", func(w http.ResponseWriter, r *http.Request) {
-
-		w.WriteHeader(http.StatusInternalServerError)
-	})
-
 	server := http.Server{
-		Handler: router,
+		Handler: s.createProxyHandler(),
 	}
 
 	defer s.Listener.Close()
@@ -62,4 +36,31 @@ func (s *Server) Serve(ctx context.Context) error {
 	log.Println("Shutting down HTTP server")
 
 	return nil
+}
+
+func (s *Server) createProxyHandler() http.Handler {
+	dialer := s.Client.Dialer()
+
+	transport := &http.Transport{
+		DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
+			return dialer(ctx)
+		},
+	}
+
+	proxy := &httputil.ReverseProxy{
+		Director: func(r *http.Request) {
+			r.URL.Scheme = "http"
+			r.URL.Host = "docker.sock"
+		},
+		Transport: transport,
+	}
+
+	return &OverridesHandler{
+		Proxy: proxy,
+		Overrides: []OverrideHandler{
+			&PullOverride{
+				Client: s.Client,
+			},
+		},
+	}
 }
