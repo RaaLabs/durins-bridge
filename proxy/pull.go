@@ -2,13 +2,13 @@ package proxy
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
+	"golang.org/x/exp/slog"
 )
 
 type PullOverride struct {
@@ -25,7 +25,7 @@ func (po *PullOverride) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	if !r.URL.Query().Has("tag") {
-		// TODO: If pulling without tag, Docker will pull all tags - we probably don't want that?
+		slog.Warn("Not allowing pull request without tag, it would pull all the tags for the givene repository", "image", r.URL.Query().Get("fromImage"))
 		http.Error(w, "pulling all tags for a repository is not allowed", http.StatusForbidden)
 		return true
 	}
@@ -44,6 +44,7 @@ func (po *PullOverride) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		},
 	)
 	if err != nil {
+		slog.Error("Failed to list Docker images", err)
 		http.Error(w, fmt.Sprintf("failed to list images: %s", err), http.StatusBadGateway)
 		return true
 	}
@@ -56,11 +57,11 @@ func (po *PullOverride) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		}
 	}
 
-	log.Println("Image not found locally, letting it through")
+	slog.Info("Image not found locally, not handling request", "tag", imageRef)
 	return false
 
 ignore:
-	log.Println("Image", imageRef, "was already found locally, will ignore pull request.")
+	slog.Info("Image was found locally, will complete the request without actually pulling", "tag", imageRef)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf(
 		"{\"status\":\"Will not pull %s - it is already present locally\"}",

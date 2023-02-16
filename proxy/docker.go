@@ -2,13 +2,13 @@ package proxy
 
 import (
 	"context"
-	"log"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"time"
 
 	"github.com/docker/docker/client"
+	"golang.org/x/exp/slog"
 )
 
 type Server struct {
@@ -27,13 +27,13 @@ func (s *Server) Serve(ctx context.Context) error {
 		<-ctx.Done()
 		timeout, done := context.WithTimeout(context.Background(), 5*time.Second)
 		defer done()
+		slog.Info("Shutting down HTTP server")
 		server.Shutdown(timeout)
 	}()
 
 	if err := server.Serve(s.Listener); err != http.ErrServerClosed {
 		return err
 	}
-	log.Println("Shutting down HTTP server")
 
 	return nil
 }

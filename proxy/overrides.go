@@ -1,9 +1,10 @@
 package proxy
 
 import (
-	"log"
 	"net/http"
 	"regexp"
+
+	"golang.org/x/exp/slog"
 )
 
 type OverrideHandler interface {
@@ -20,12 +21,12 @@ func (oh *OverridesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	for _, o := range oh.Overrides {
 		if o.ServeHTTP(w, req) {
-			log.Println("Request handled by override", r.URL)
+			slog.Debug("Request handled by override", "url", r.URL)
 			return
 		}
 	}
 
-	log.Println("Handing over request to proxy", r.URL)
+	slog.Debug("Handing over request to proxy", "url", r.URL)
 	oh.Proxy.ServeHTTP(w, r)
 }
 

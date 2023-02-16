@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 	"raalabs.tech/durins-bridge/docker"
 	"raalabs.tech/durins-bridge/listening"
 	"raalabs.tech/durins-bridge/proxy"
@@ -22,7 +21,7 @@ var create = &cobra.Command{
 			return err
 		}
 
-		log.Println("Creating Durin's Bridge from", path, "to", host)
+		slog.Info("Creating brige", "from", path, "to", host)
 
 		listener, err := listening.CreateListenerFromArgument(path)
 		if err != nil {
