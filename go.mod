@@ -3,6 +3,7 @@ module raalabs.tech/durins-bridge
 go 1.19
 
 require (
+	github.com/coreos/go-systemd/v22 v22.5.0
 	github.com/docker/docker v20.10.23+incompatible
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb

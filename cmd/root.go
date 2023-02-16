@@ -48,6 +48,7 @@ func Execute() {
 
 func init() {
 	root.AddCommand(create)
+	root.AddCommand(activate)
 	root.PersistentFlags().StringP("log-level", "l", "info", "Sets the minimum log level to print")
 	root.SetHelpCommand(&cobra.Command{Hidden: true})
 }
