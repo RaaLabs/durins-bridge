@@ -26,6 +26,6 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GORELEASER_PREVIOUS_TAG: ${{ steps.tagging.previous_tag }}
-          GORELEASER_CURRENT_TAG: ${{ steps.tagging.new_tag }}
+          GORELEASER_PREVIOUS_TAG: ${{ steps.tagging.outputs.previous_tag }}
+          GORELEASER_CURRENT_TAG: ${{ steps.tagging.outputs.new_tag }}
 
