@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: mathieudutour/github-tag-action@v6.1
+        id: tagging
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: main
@@ -25,3 +26,6 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GORELEASER_PREVIOUS_TAG: ${{ steps.tagging.previous_tag }}
+          GORELEASER_CURRENT_TAG: ${{ steps.tagging.new_tag }}
+
