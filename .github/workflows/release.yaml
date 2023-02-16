@@ -1,14 +1,21 @@
-name: "Release: Artifacts"
+name: Release
 
 on:
   push:
-    tags: ['*']
+    branches:
+      - main
 
 jobs:
   release:
     name: Release binaries on GitHub
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main
+          default_bump: patch
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
