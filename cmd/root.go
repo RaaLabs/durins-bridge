@@ -39,7 +39,9 @@ commands enter, they SHALL NOT PASS!                     /       |
                                              ||                ,'   /    |
 `,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
-		options := slog.HandlerOptions{}
+		options := slog.HandlerOptions{
+			Level: slog.LevelInfo,
+		}
 
 		if level, err := cmd.Flags().GetString("log-level"); err == nil {
 			switch level {
@@ -57,6 +59,7 @@ commands enter, they SHALL NOT PASS!                     /       |
 
 		handler := options.NewTextHandler(cmd.OutOrStdout())
 		slog.SetDefault(slog.New(handler))
+		slog.Log(9, "Log level is set to", "level", options.Level.Level().String())
 	},
 	CompletionOptions: cobra.CompletionOptions{
 		HiddenDefaultCmd: true,
