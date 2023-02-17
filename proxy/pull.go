@@ -20,27 +20,26 @@ func (po *PullOverride) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	if !r.URL.Query().Has("fromImage") {
+	imageRef := r.URL.Query().Get("fromImage")
+	tag := r.URL.Query().Get("tag")
+
+	if imageRef == "" {
 		return false
 	}
 
-	if !r.URL.Query().Has("tag") {
-		slog.Warn("Not allowing pull request without tag, it would pull all the tags for the givene repository", "image", r.URL.Query().Get("fromImage"))
-		http.Error(w, "pulling all tags for a repository is not allowed", http.StatusForbidden)
-		return true
+	if tag != "" {
+		imageRef = fmt.Sprintf("%s:%s", imageRef, tag)
 	}
 
-	imageRef := fmt.Sprintf(
-		"%s:%s",
-		r.URL.Query().Get("fromImage"),
-		r.URL.Query().Get("tag"),
-	)
-
+	slog.Debug("Got image pull request for", "tag", imageRef)
 	images, err := po.Client.ImageList(
 		r.Context(),
 		types.ImageListOptions{
-			All:     true,
-			Filters: filters.NewArgs(filters.Arg("reference", imageRef)),
+			All: true,
+			Filters: filters.NewArgs(filters.Arg(
+				"reference",
+				imageRef,
+			)),
 		},
 	)
 	if err != nil {
@@ -62,6 +61,7 @@ func (po *PullOverride) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 
 ignore:
 	slog.Info("Image was found locally, will complete the request without actually pulling", "tag", imageRef)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf(
 		"{\"status\":\"Will not pull %s - it is already present locally\"}",
